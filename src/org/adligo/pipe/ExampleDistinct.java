@@ -5,14 +5,14 @@ import java.util.function.Function;
 
 import org.adligo.i.pipe.I_Pipe;
 
-public class PipeDistinctExample implements Function<Integer, Integer> {
+public class ExampleDistinct implements Function<Integer, Integer> {
 
 	
   public static void main(String [] args) {
-		new PipeDistinctExample();
+		new ExampleDistinct();
 	}
   
-  public PipeDistinctExample() {
+  public ExampleDistinct() {
   	I_Pipe<Integer, Integer> p = Pipe.of(this)
   		.distinct().then((i) -> {
   			System.out.println("hey " + i + " wasn't filtered");

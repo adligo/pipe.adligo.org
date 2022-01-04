@@ -5,14 +5,14 @@ import java.util.function.Function;
 
 import org.adligo.i.pipe.I_Pipe;
 
-public class PipeListExample implements Function<Integer, String> {
+public class ExampleList implements Function<Integer, String> {
 
 	
   public static void main(String [] args) {
-		new PipeListExample();
+		new ExampleList();
 	}
   
-  public PipeListExample() {
+  public ExampleList() {
   	/*
   	I_Pipe<Integer, List<String>> p = Pipe.of(this)
   		.distinct().map((i) -> {

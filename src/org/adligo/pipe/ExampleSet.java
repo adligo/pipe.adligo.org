@@ -6,14 +6,14 @@ import java.util.function.Function;
 
 import org.adligo.i.pipe.I_Pipe;
 
-public class PipeSetExample implements Function<Integer, String> {
+public class ExampleSet implements Function<Integer, String> {
 
 	
   public static void main(String [] args) {
-		new PipeSetExample();
+		new ExampleSet();
 	}
   
-  public PipeSetExample() {
+  public ExampleSet() {
   	/*
   	I_Pipe<Integer, Set<String>> p = Pipe.of(this)
   		.map((i) -> {
