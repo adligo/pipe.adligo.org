@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.adligo.i.pipe.I_Run;
+
 public class PipeExample {
 
   public static void main(String [] args) {
@@ -11,7 +13,7 @@ public class PipeExample {
 	}
   
   public PipeExample() {
-		Pipe<String, Void> p = Pipe.of(String.class, Integer.class, stepOne())
+		I_Run<String> p = Pipe.of(String.class, Integer.class, stepOne())
 				.decision(stepTwo());
 		p.supply(List.of("123","456","789"));
   }
@@ -25,13 +27,13 @@ public class PipeExample {
   
   public Consumer<Integer> stepTwo() {
   	//initialize these first
-  	Pipe<Integer, Void> p123 = Pipe.of(Integer.class,Integer.class, 
+  	I_Run<Integer> p123 = Pipe.of(Integer.class,Integer.class, 
   			  (i) -> { return i++; })
   			.then((i) -> { 
   				System.out.println("\t\tA it's now " + i);
   			});
 
-  	Pipe<Integer, Void> p456 = Pipe.of(Integer.class,Integer.class,  
+  	I_Run<Integer> p456 = Pipe.of(Integer.class,Integer.class,  
   			  (i) -> { return i * i++; })
   			.then((i) -> { 
   				System.out.println("\t\tB it's now " + i);
