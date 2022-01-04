@@ -1,5 +1,6 @@
 package org.adligo.pipe;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 import org.adligo.i.pipe.I_Pipe;
@@ -23,8 +24,8 @@ public class PipeReturnExample implements Function<String, Integer> {
 			System.out.println("you rock! " + i);
 			return i;
 		});
-		int i = p.apply("123");
-		System.out.println("and a PipeFuture can return, ie " + i);
+		Optional<Integer> i = p.get("123");
+		System.out.println("and a PipeFuture can return, ie " + i.get());
   }
 
 	@Override

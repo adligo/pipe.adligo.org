@@ -1,5 +1,6 @@
 package org.adligo.pipe;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 import org.adligo.i.pipe.I_Pipe;
@@ -16,16 +17,16 @@ public class PipeFilterExample implements Function<String, Integer> {
   	.filter((i) -> {
   		 System.out.println("in filter with " + i);
   		 switch (i) {
-  		   case 123: return false;
+  		   case 123: return true;
   			 default:
-  				 return true;
+  				 return false;
   		 }
   	}).then((i) -> {
   		System.out.println("hey " + i + " wasn't filtered");
   		return i;
   	});
-		Integer i = p.apply("123");
-		System.out.println("and a PipeFuture can return, ie " + i + "\n\n");
+		Optional<Integer> i = p.get("123");
+		System.out.println("and a PipeFuture can return, ie " + i.get() + "\n\n");
 		p.supply("456");
   }
 

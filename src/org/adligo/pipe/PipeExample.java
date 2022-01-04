@@ -26,13 +26,13 @@ public class PipeExample {
   
   public PipeExample() {
 		I_Run<String> p = Pipe.of(stepOne())
-				.filter((i) -> { 
-					System.out.println("in filter " + i);
-					switch(i) {
-					  case 123: return true;
-					  default: return false;
-					}
-				})
+//				.filter((i) -> { 
+//					System.out.println("in filter " + i);
+//					switch(i) {
+//					  case 123: return true;
+//					  default: return false;
+//					}
+//				})
 				.decision(stepTwo());
 		p.supply(List.of("123","456","789"));
   }

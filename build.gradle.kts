@@ -2,6 +2,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 plugins {
+  application
   `maven-publish`
   eclipse
   java
@@ -9,7 +10,7 @@ plugins {
 }
 
 dependencies {
-  implementation("org.adligo:i_pipe:v0_2")
+  implementation("org.adligo:i_pipe:v0_3")
 }
 
 java {
@@ -74,6 +75,8 @@ tasks.register<GradleBuild>("ecp") {
     tasks = listOf("cleanEclipseClasspath", "eclipseClasspath")
 }
 
-
+application {
+    mainClass.set("org.adligo.pipe.PipeReduceExample")
+}
 
 

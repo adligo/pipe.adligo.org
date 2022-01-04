@@ -1,16 +1,16 @@
 package org.adligo.pipe;
 
-import java.nio.channels.Pipe.SinkChannel;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+
 import org.adligo.i.pipe.I_Pipe;
 import org.adligo.i.pipe.I_Run;
 
@@ -37,16 +37,16 @@ implements I_Pipe<I,O>
   }
 
 
-	private PipeHead<I,O> head;
+	private final PipeHead<I,O> head;
 	private Optional<PipeSegment<I,?,O>> segment;
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Pipe(Consumer<I> consumer) {
 		this.head = new PipeHead(consumer);
 		segment = Optional.empty();
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public <B> Pipe(Function<I,B> head) {
 		this.head = new PipeHead(head);
 		segment = Optional.empty();
@@ -66,7 +66,8 @@ implements I_Pipe<I,O>
 		segment = Optional.of(ps);
 	}
 	
-	public O apply(I in) {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private O apply(I in) {
 		if (segment.isPresent()) {
 			PipeSegment ps = segment.get();
 			return (O) ps.apply(in);
@@ -80,7 +81,20 @@ implements I_Pipe<I,O>
 	}
 	
   public I_Pipe<I,O> distinct() {
-  	return this;
+  	return map(new Function<O,O>() {
+  		Set<O> set = new HashSet<O>();
+  		
+			@Override
+			public O apply(O t) {
+				if (set.contains(t)) {
+				  return null;
+				} else {
+					set.add(t);
+					return t;
+				}
+			}
+  		
+  	});
   }
   
 	@Override
@@ -88,10 +102,30 @@ implements I_Pipe<I,O>
 		return map(mapper);
 	}
 	
-	public O get(I in) {
-		return apply(in);
+	public Optional<O> get(I in) {
+		O r = apply(in);
+		if (r != null) {
+			return Optional.of(r);
+		}
+		return Optional.empty();
+	}	
+
+	public Optional<O> get(I ... in) {
+		return get(List.of(in));
+	}	
+
+	public Optional<O> get(Collection<I> in) {
+		O r = null;
+		for (I i: in) {
+		  r = apply(i);
+		}
+		if (r != null) {
+			return Optional.of(r);
+		}
+		return Optional.empty();
 	}	
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public I_Pipe<I,O> filter(Predicate<? super O> predicate) {
 		
@@ -128,7 +162,6 @@ implements I_Pipe<I,O>
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	//<R> I_Pipe<R> map(Function<? super T, ? extends R> mapper);
 	public <R> I_Pipe<I,R> map(Function<? super O, ? extends R> mapper) {
 		head.allowIfNotConsumer();
 		if (segment.isEmpty()) {
@@ -142,6 +175,16 @@ implements I_Pipe<I,O>
 		return (I_Pipe) this;
 	}
 	
+	@Override
+	public <R> I_Pipe<I, R> reduce(BinaryOperator<O> bo) {
+		throw new IllegalStateException("method not yet implemented");
+		//combiner.
+	}
+
+	@Override
+	public <R> I_Pipe<I,R> reduce(R identity, BiFunction<R, ? super O, R> accumulator, BinaryOperator<O> combiner) {
+	  throw new IllegalStateException("method not yet implemented");
+  }  
 	
 	public void supply(I in) {
 		supply(List.of(in));
@@ -155,6 +198,44 @@ implements I_Pipe<I,O>
 		for(I i: in) {
 			apply(i);
 		}
-	}	
+	}
 	
+	@Override
+	public I_Pipe<I,List<O>> toList() {
+		throw new IllegalStateException("Method not yet implemented");
+		//reduce( ,new ArrayList<>, Collectors.toList());
+	}
+
+	
+	/*
+	public I_Pipe<I,List<O>> toList(Supplier<List<O>> listSupplier) {
+		return map(new Function<O,List<O>>() {
+			
+			@Override
+			public List<O> apply(O t) {
+				listSupplier.get()
+				list.add(t);
+				return list;
+			} 
+			
+			public List<O> apply(O t, List<O> list) {
+				list.add(t);
+				return list;
+			} 
+		});
+	}
+
+	@Override
+	public I_Pipe<I,Set<O>> toSet() {
+		return map(new Function<O,Set<O>>() {
+			Set<O> r = new HashSet<>();
+			
+			@Override
+			public Set<O> apply(O t) {
+				r.add(t);
+				return r;
+			} 
+		});
+	}	
+	*/
 }
