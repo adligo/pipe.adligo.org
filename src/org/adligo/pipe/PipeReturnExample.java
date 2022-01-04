@@ -1,14 +1,19 @@
 package org.adligo.pipe;
 
+import java.util.function.Function;
+
 import org.adligo.i.pipe.I_Pipe;
 
-public class PipeReturnExample {
+public class PipeReturnExample implements Function<String, Integer> {
 
 	
   public static void main(String [] args) {
-		I_Pipe<String, Integer> p = Pipe.of(String.class,Integer.class,
-				(s) -> { return Integer.parseInt(s); }
-		).then((i) -> {
+		new PipeReturnExample();
+	}
+  
+  public PipeReturnExample() {
+  	I_Pipe<String, Integer> p = Pipe.of(this)
+  	.then((i) -> {
 			System.out.println("hey " + i);
 			return i.doubleValue();
 		}).then((i) -> {
@@ -20,5 +25,13 @@ public class PipeReturnExample {
 		});
 		int i = p.apply("123");
 		System.out.println("and a PipeFuture can return, ie " + i);
+  }
+
+	@Override
+	public Integer apply(String s) {
+		System.out.println("ahmm " + s);
+		return Integer.parseInt(s);
 	}
+  
+  
 }

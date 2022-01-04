@@ -9,7 +9,7 @@ plugins {
 }
 
 dependencies {
-  implementation("org.adligo:i_pipe:v0_1")
+  implementation("org.adligo:i_pipe:v0_2")
 }
 
 java {

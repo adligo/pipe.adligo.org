@@ -1,9 +1,9 @@
 package org.adligo.pipe;
 
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * 
@@ -14,13 +14,12 @@ import java.util.function.Function;
  * @param <O> output
  */
 public class PipeSegment<I,B,O> implements Function<I,O> {
-	
   private final Function<I,B> head;
-  private final Optional<Function<B,O>> tail;  
+  private final Function<B,O> tail;  
   
   public PipeSegment(Function<I,B> head) {
   	this.head = Objects.requireNonNull(head);
-  	this.tail = Optional.empty();
+  	this.tail = null;
   }
 
   public PipeSegment(Consumer<I> head) {
@@ -31,25 +30,43 @@ public class PipeSegment<I,B,O> implements Function<I,O> {
   			return null; 
   		} //do nothing
   	};
-  	this.tail = Optional.empty();
+  	this.tail = null;
   }
   
   public PipeSegment(Function<I,B> head, Function<B,O> tail) {
   	this.head = Objects.requireNonNull(head);
-  	this.tail = Optional.of(Objects.requireNonNull(tail));
+  	this.tail = Objects.requireNonNull(tail);
   }
-
+  
   public PipeSegment(Function<I,B> head, Consumer<B> consumer) {
   	this.head = Objects.requireNonNull(head);
   	Objects.requireNonNull(consumer);
-  	Function<B,O> tailConsumer = new Function<B,O>() {
+  	this.tail = new Function<B,O>() {
 			@Override
 			public O apply(B t) {
-				consumer.accept(t);
+				if (t != null) {
+					consumer.accept(t);
+				}
+				return null;
+			}
+  	};  		
+  }
+  
+  public PipeSegment(Function<I,B> head, Function<B, O> tail, Predicate<? super B> predicate) {
+  	this.head = Objects.requireNonNull(head);
+  	Objects.requireNonNull(tail);
+  	Objects.requireNonNull(predicate);
+  	this.tail = new Function<B,O>() {
+			@Override
+			public O apply(B t) {
+				if (t != null) {
+  				if (predicate.test(t)) {
+  					return tail.apply(t);
+  				}
+				}
 				return null;
 			}
   	};
-  	this.tail = Optional.of(tailConsumer);
   }
   
 	public Function<I,B> getHead() {
@@ -57,24 +74,21 @@ public class PipeSegment<I,B,O> implements Function<I,O> {
 	}
 
 	public Function<B,O> getTail() {
-		return tail.get();
-	}
-  
-	public boolean hasTail() {
-		if (tail.isPresent()) {
-			return true;
-		}
-		return false;
+		return tail;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
+	public boolean hasTail() {
+		if (tail == null) {
+			return false;
+		}
+		return true;
+	}
+
 	public O apply(I i) {
 		B b = head.apply(i);
-		if (tail.isPresent()) {
-			return tail.get().apply(b);
-		} else {
-			return (O) b;
+		if (b == null) {
+			return null;
 		}
+		return tail.apply(b);
 	}
 }

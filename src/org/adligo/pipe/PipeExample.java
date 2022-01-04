@@ -1,8 +1,11 @@
 package org.adligo.pipe;
 
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import org.adligo.i.pipe.I_Run;
 
@@ -10,10 +13,26 @@ public class PipeExample {
 
   public static void main(String [] args) {
   	new PipeExample();
+
+//  	ArrayBlockingQueue<String> queue = new ArrayBlockingQueue<String>(50);
+//  	Supplier<String> sup = () -> { return queue.poll(); };
+//		Stream.generate(sup).map((s) -> {
+//			System.out.println("hey at least it's deferred " + s);
+//			return Integer.parseInt(s);
+//		});
+//		
+//		queue.add("1");
 	}
   
   public PipeExample() {
-		I_Run<String> p = Pipe.of(String.class, Integer.class, stepOne())
+		I_Run<String> p = Pipe.of(stepOne())
+				.filter((i) -> { 
+					System.out.println("in filter " + i);
+					switch(i) {
+					  case 123: return true;
+					  default: return false;
+					}
+				})
 				.decision(stepTwo());
 		p.supply(List.of("123","456","789"));
   }
@@ -44,10 +63,10 @@ public class PipeExample {
 			Integer ii = (Integer) i;
 			switch (ii) {
 			  case 123: System.out.println("\tDid A for 123"); 
-			    p123.supply(i);
+			    p123.supply(ii);
 			    break;
 			  case 456: System.out.println("\tDid B for 456"); 
-			    p456.supply(i);
+			    p456.supply(ii);
 			    break;
 			  default:
 			  	System.out.println("\tDid default");
