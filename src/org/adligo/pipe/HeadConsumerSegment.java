@@ -1,6 +1,7 @@
 package org.adligo.pipe;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class HeadConsumerSegment<I> extends AbstractSegment
@@ -10,7 +11,12 @@ implements Consumer<I> {
   public HeadConsumerSegment(Consumer<I> head) {
     this.head = Objects.requireNonNull(head);
   }
-
+  
+  public HeadConsumerSegment(Consumer<I> head, Optional<String> nameOpt) {
+  	super(nameOpt);
+    this.head = Objects.requireNonNull(head);
+  }
+  
   @Override
   public void accept(I t) {
     head.accept(t);

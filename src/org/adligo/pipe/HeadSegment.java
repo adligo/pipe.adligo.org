@@ -1,6 +1,7 @@
 package org.adligo.pipe;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 
 public class HeadSegment<I,O> extends AbstractSegment
@@ -11,6 +12,11 @@ implements Function<I, O> {
     this.head = Objects.requireNonNull(head);
   }
 
+  public HeadSegment(Function<I,O> head, Optional<String> nameOpt) {
+  	super(nameOpt);
+    this.head = Objects.requireNonNull(head);
+  }
+  
   @Override
   public O apply(I t) {
     return head.apply(t);

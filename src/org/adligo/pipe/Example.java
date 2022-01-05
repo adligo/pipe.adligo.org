@@ -25,7 +25,7 @@ public class Example {
   }
 
   public Example() {
-    I_Run<String> p = Pipe.of(stepOne())
+    I_Run<String> p = Pipe.of(stepOne(), "one")
 //				.filter((i) -> { 
 //					System.out.println("in filter " + i);
 //					switch(i) {
@@ -33,7 +33,7 @@ public class Example {
 //					  default: return false;
 //					}
 //				})
-        .decision(stepTwo());
+        .decision(stepTwo(), "two");
     p.supply(List.of("123", "456", "789"));
   }
 

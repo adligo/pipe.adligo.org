@@ -1,6 +1,7 @@
 package org.adligo.pipe;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiFunction;
 
 public class HeadBiSegment<IL,IR,O> extends AbstractSegment
@@ -11,6 +12,11 @@ implements BiFunction<IL, IR,O> {
     this.head = Objects.requireNonNull(head);
   }
 
+  public HeadBiSegment(BiFunction<IL, IR,O> head, Optional<String> nameOpt) {
+  	super(nameOpt);
+    this.head = Objects.requireNonNull(head);
+  }
+  
   @Override
   public boolean isHeadOnly() {
     return Boolean.TRUE;

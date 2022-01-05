@@ -12,6 +12,17 @@ import java.util.Optional;
 public class PipeOptional<T> {
   static PipeOptional<?> EMPTY = new PipeOptional<>();
   
+  /**
+   * slightly faster than instance of :)
+   * @param b
+   * @return
+   */
+  public static boolean isA(Object b) {
+  	if (b == null) {
+  		return false;
+  	}
+  	return PipeOptional.class.equals(b.getClass());
+  }
   @SuppressWarnings("unchecked")
   static <T> PipeOptional<T> empty() {
     return (PipeOptional<T>) EMPTY;
@@ -21,6 +32,7 @@ public class PipeOptional<T> {
   static <T> PipeOptional<T> of (T i) {
     return new PipeOptional(i);
   }
+  
   private final Optional<T> delegate;
 
   private PipeOptional() {

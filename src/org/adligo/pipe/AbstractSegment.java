@@ -1,6 +1,11 @@
 package org.adligo.pipe;
 
-public abstract class AbstractSegment  {
+import java.util.Objects;
+import java.util.Optional;
+
+import org.adligo.i.pipe.I_Named;
+
+public abstract class AbstractSegment implements I_Named {
 
   public static final String IS_HEAD_ONLY_IS_FALSE_AND_HAS_TAIL_IS_FALSE_PROGRAMMING_ISSUE = 
       "isHeadOnly is false and hasTail is false, programming issue?\n\t%s";
@@ -8,6 +13,25 @@ public abstract class AbstractSegment  {
       "The head of the pipe segment is a Consumer, not able to Mao!";
   public static final String TAIL_CONSUMER_NOT_MAPPABLE = 
       "The tail of the pipe segment is a Consumer, not able to Mao!";
+  
+  private final String name;
+
+  public AbstractSegment() {
+  	this.name = this.toString();
+  }
+  
+  public AbstractSegment(String name) {
+  	this.name = Objects.requireNonNull(name);
+  }
+ 
+  public AbstractSegment(Optional<String> nameOpt) {
+  	Objects.requireNonNull(nameOpt);
+  	if (nameOpt.isPresent()) {
+  	  this.name = Objects.requireNonNull(nameOpt.get());
+  	} else {
+  		this.name = toString();
+  	}
+  }
   
   /**
    * Throw an illegal state Exception with a message
@@ -87,6 +111,10 @@ public abstract class AbstractSegment  {
   }
   
   public abstract SegmentType getType();
+  
+  public String getName() {
+  	return name;
+  }
   
   public boolean hasTail() {
     return false;

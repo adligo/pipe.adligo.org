@@ -1,6 +1,7 @@
 package org.adligo.pipe;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -25,19 +26,33 @@ public class LinkSegment extends AbstractSegment {
     this.tail = Objects.requireNonNull(tail);
   }
 
-  public <IL,IR, O> LinkSegment(AbstractSegment head, BiFunction<IL,IR, O> tail) {
+  public <IL,IR, O> LinkSegment(AbstractSegment head, PipeOptional<O> identityOpt, BiFunction<IL,IR, O> tail) {
+    this(head, identityOpt, tail, Optional.empty());
+  }
+  
+  @SuppressWarnings("unchecked")
+	public <IL,IR, O> LinkSegment(AbstractSegment head, PipeOptional<O> identityOpt, BiFunction<IL,IR, O> tail, 
+  		Optional<String> nameOpt) {
     this.head = Objects.requireNonNull(head);
-    this.tail = new TailBiSegment<>(tail);
+    this.tail = new TailBiSegment(tail, identityOpt, nameOpt);
   }
 
   public <I> LinkSegment(AbstractSegment head, Consumer<I> tail) {
+    this(head,tail, Optional.empty());
+  }
+  
+  public <I> LinkSegment(AbstractSegment head, Consumer<I> tail, Optional<String> nameOpt) {
     this.head = Objects.requireNonNull(head);
-    this.tail = new TailConsumerSegment<>(tail);
+    this.tail = new TailConsumerSegment<>(tail, nameOpt);
   }
 
   public <I,O> LinkSegment(AbstractSegment head, Function<I,O> tail) {
+    this(head, tail, Optional.empty());
+  }
+  
+  public <I,O> LinkSegment(AbstractSegment head, Function<I,O> tail, Optional<String> nameOpt) {
     this.head = Objects.requireNonNull(head);
-    this.tail = new TailSegment<>(tail);
+    this.tail = new TailSegment<>(tail, nameOpt);
   }
 
   public <IL,IR, O> LinkSegment(BiFunction<IL,IR, O> head, AbstractSegment tail) {
@@ -56,24 +71,42 @@ public class LinkSegment extends AbstractSegment {
   }
 
   public <I,M,O> LinkSegment(Function<I,M> head, Function<M,O> tail) {
-    this.head = new HeadSegment<>(head);
-    this.tail = new TailSegment<>(tail);
+    this(head, Optional.empty(), tail, Optional.empty());
+  }
+  
+  public <I,M,O> LinkSegment(Function<I,M> head, 
+  		Optional<String> headNameOpt,
+  		Function<M,O> tail, Optional<String> tailNameOpt) {
+    this.head = new HeadSegment<>(head, headNameOpt);
+    this.tail = new TailSegment<>(tail, tailNameOpt);
   }
 
   public <I,O> LinkSegment(Function<I,O> head, Consumer<O> tail) {
-    this.head = new HeadSegment<>(head);
-    this.tail = new TailConsumerSegment<>(tail);
+    this(head, Optional.empty(), tail, Optional.empty());
+  }
+  
+  public <I,O> LinkSegment(Function<I,O> head, Optional<String> headNameOpt, 
+  		Consumer<O> tail, Optional<String> tailNameOpt) {
+    this.head = new HeadSegment<>(head, headNameOpt);
+    this.tail = new TailConsumerSegment<>(tail, tailNameOpt);
   }
 
-  
   public <I,O> LinkSegment(HeadSegment<I,O> head, Consumer<O> tail) {
+    this(head, tail, Optional.empty());
+  }
+  
+  public <I,O> LinkSegment(HeadSegment<I,O> head, Consumer<O> tail, Optional<String> nameOpt) {
     this.head = Objects.requireNonNull(head);
-    this.tail = new TailConsumerSegment<>(tail);
+    this.tail = new TailConsumerSegment<>(tail, nameOpt);
   }
 
   public <I,O> LinkSegment(HeadSegment<I,O> head, Function<O,O> tail) {
+    this(head, tail, Optional.empty());
+  }
+  
+  public <I,O> LinkSegment(HeadSegment<I,O> head, Function<O,O> tail, Optional<String> nameOpt) {
     this.head = Objects.requireNonNull(head);
-    this.tail = new TailSegment<>(tail);
+    this.tail = new TailSegment<>(tail, nameOpt);
   }
 
   @Override
