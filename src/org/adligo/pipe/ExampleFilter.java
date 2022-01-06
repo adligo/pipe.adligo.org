@@ -12,7 +12,7 @@ public class ExampleFilter implements Function<String, Integer> {
   }
 
   public ExampleFilter() {
-    I_Pipe<String, Integer> p = Pipe.of(this).filter((i) -> {
+    I_Pipe<String, Integer> p = new PipeCtx().newPipe(this).filter((i) -> {
       System.out.println("in filter with " + i);
       switch (i) {
       case 123:

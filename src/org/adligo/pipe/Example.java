@@ -25,7 +25,7 @@ public class Example {
   }
 
   public Example() {
-    I_Run<String> p = Pipe.of(stepOne(), "one")
+    I_Run<String> p = new PipeCtx().newPipe(stepOne(), "one")
 //				.filter((i) -> { 
 //					System.out.println("in filter " + i);
 //					switch(i) {
@@ -46,13 +46,13 @@ public class Example {
 
   public Consumer<Integer> stepTwo() {
     // initialize these first
-    I_Run<Integer> p123 = Pipe.of(Integer.class, Integer.class, (i) -> {
+    I_Run<Integer> p123 = new PipeCtx().newPipe(Integer.class, Integer.class, (i) -> {
       return i++;
     }).then((i) -> {
       System.out.println("\t\tA it's now " + i);
     });
 
-    I_Run<Integer> p456 = Pipe.of(Integer.class, Integer.class, (i) -> {
+    I_Run<Integer> p456 = new PipeCtx().newPipe(Integer.class, Integer.class, (i) -> {
       return i * i++;
     }).then((i) -> {
       System.out.println("\t\tB it's now " + i);

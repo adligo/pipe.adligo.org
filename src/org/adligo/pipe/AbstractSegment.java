@@ -17,7 +17,7 @@ public abstract class AbstractSegment implements I_Named {
   private final String name;
 
   public AbstractSegment() {
-  	this.name = this.toString();
+  	this.name = super.toString();
   }
   
   public AbstractSegment(String name) {
@@ -115,8 +115,22 @@ public abstract class AbstractSegment implements I_Named {
   public String getName() {
   	return name;
   }
+
+  public int hashCode() {
+  	if (name == null) {
+  		return 0;
+  	}
+  	return name.hashCode();
+  }
   
   public boolean hasTail() {
     return false;
+  }
+  
+  public String toString() {
+  	if (name == null) {
+  		return super.toString();
+  	}
+  	return super.toString() + " " + name;
   }
 }

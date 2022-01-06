@@ -15,11 +15,22 @@ public class PipeProcessor<I,O> {
 
   @SuppressWarnings("unchecked")
   public Optional<O> process(Collection<I> collection) {
-  	Set<AbstractSegment> segStates = new HashSet<AbstractSegment>();
+  	PipeProcessorCtx ctx = new PipeProcessorCtx();
   	PipeOptional<?> out = PipeOptional.empty();
   	for (I i: collection) {
-  		out = process(seg, segStates,i);
+  		out = process(seg, ctx, i);
   	}
+    if (out.isEmpty()) {
+      return Optional.empty();
+    } else {
+      return (Optional<O>) Optional.of(out.get());
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  public Optional<O> process(I i) {
+  	PipeProcessorCtx ctx = new PipeProcessorCtx();
+    PipeOptional<?> out = process(seg, ctx,i);
     if (out.isEmpty()) {
       return Optional.empty();
     } else {
@@ -28,8 +39,8 @@ public class PipeProcessor<I,O> {
   }
   
   @SuppressWarnings("unchecked")
-  public Optional<O> process(Set<AbstractSegment> segsStarted, I i) {
-    PipeOptional<?> out = process(seg, segsStarted,i);
+  public Optional<O> process(PipeProcessorCtx ctx, I i) {
+    PipeOptional<?> out = process(seg, ctx,i);
     if (out.isEmpty()) {
       return Optional.empty();
     } else {
@@ -47,37 +58,31 @@ public class PipeProcessor<I,O> {
    */
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public PipeOptional<? super Object> process(AbstractSegment seg,
-  		Set<AbstractSegment> segsStarted, Object i) {
+  		PipeProcessorCtx ctx, Object i) {
     SegmentType t = seg.getType();
     switch (t) {
       case head:
           O o = ((HeadSegment<? super Object, O>) seg).apply(i);
-          segsStarted.add(seg);
           if (o != null) {
             return PipeOptional.of(o);
           }
         break;
       case headConsumer:
           ((HeadConsumerSegment<? super Object>) seg).accept(i);
-          segsStarted.add(seg);
         break;
       case link:
-           PipeOptional<Object> ol = processLink((LinkSegment) seg, segsStarted, i);
-           segsStarted.add(seg);
+           PipeOptional<Object> ol = processLink((LinkSegment) seg, ctx, i);
            return ol;
       case tail:
           O otf = ((TailSegment<? super Object,O>) seg).apply(i);
-          segsStarted.add(seg);
           if (otf != null) {
             return PipeOptional.of(otf);
           }
       case tailBi:
-      	  PipeOptional<Object> obi = processBiSeg((TailBiSegment) seg, segsStarted, i);
-      	  segsStarted.add(seg);
+      	  PipeOptional<Object> obi = processBiSeg((TailBiSegment) seg, ctx, i);
       	  return obi;
       case tailConsumer:
           ((TailConsumerSegment<? super Object>) seg).accept(i);
-          segsStarted.add(seg);
         break;
       default:
         throw new IllegalStateException("TODO " + t + " AbstractSegment name is \n\t" 
@@ -88,9 +93,9 @@ public class PipeProcessor<I,O> {
   
   @SuppressWarnings({ "rawtypes", "unchecked" })
   public <PI,M,PO> PipeOptional<PO> processLink(LinkSegment seg, 
-  		Set<AbstractSegment> segsStarted, Object i) {
+  		PipeProcessorCtx ctx, Object i) {
     AbstractSegment head = seg.getHead();
-    PipeOptional po = process(head, segsStarted, i);
+    PipeOptional po = process(head, ctx, i);
     if (po.isEmpty()) {
       return PipeOptional.empty();
     } else if (seg.isHeadOnly()) {
@@ -99,28 +104,28 @@ public class PipeProcessor<I,O> {
       Object m = po.get();
       if (m != null) {
         AbstractSegment tail = seg.getTail();
-        segsStarted.add(seg);
-        return (PipeOptional) process(tail,segsStarted, m);
+        return (PipeOptional) process(tail,ctx, m);
       }
     }
     return PipeOptional.empty();
   }
   
-  @SuppressWarnings({ "rawtypes", "unchecked" })
+  @SuppressWarnings({"unchecked" })
   public <IL, IR, O> PipeOptional<O> processBiSeg(
   		TailBiSegment<IL, IR, O> seg, 
-  		Set<AbstractSegment> segsStarted, IR i) {
+  		PipeProcessorCtx ctx, IR i) {
     
   	PipeOptional<IL> po = seg.getIdentityOpt();
   	if (po.isPresent()) {
   		O o = null;
-  		if (segsStarted.contains(seg)) {
+  		Object accumulator = ctx.getAccumulator(seg);
+  		if (accumulator == null) {
   			o = seg.apply(po.get(), i);
   		} else {
-  			o = seg.apply(po.get(), i);	
+  			o = seg.apply((IL) accumulator, i);	
   		}
-  		segsStarted.add(seg);
   		if (o != null) {
+    		ctx.setAccumulator(seg, o);
   			return PipeOptional.of(o);
   		} 
   	} else {

@@ -13,7 +13,7 @@ public class ExampleDistinct implements Function<Integer, Integer> {
 	}
   
   public ExampleDistinct() {
-  	I_Pipe<Integer, Integer> p = Pipe.of(this)
+  	I_Pipe<Integer, Integer> p = new PipeCtx().newPipe(this)
   		.distinct().then((i) -> {
   			System.out.println("hey " + i + " wasn't filtered");
   			return i;

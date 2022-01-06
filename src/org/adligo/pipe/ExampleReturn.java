@@ -12,7 +12,7 @@ public class ExampleReturn implements Function<String, Integer> {
   }
 
   public ExampleReturn() {
-    I_Pipe<String, Integer> p = Pipe.of(this).then((i) -> {
+    I_Pipe<String, Integer> p = new PipeCtx().newPipe(this).then((i) -> {
       System.out.println("hey " + i);
       return i.doubleValue();
     }).then((i) -> {

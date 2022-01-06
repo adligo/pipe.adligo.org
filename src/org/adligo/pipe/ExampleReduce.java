@@ -14,7 +14,7 @@ public class ExampleReduce implements Function<Integer, String> {
 	}
   
   public ExampleReduce() {
-  	I_Pipe<Integer, Double> p = Pipe.of(this)
+  	I_Pipe<Integer, Double> p = new PipeCtx().newPipe(this)
   		.map((s) -> {
   			System.out.println("hey " + s + " wasn't filtered");
   			return Double.parseDouble(s);

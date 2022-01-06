@@ -17,42 +17,7 @@ import org.adligo.i.pipe.I_Run;
 
 public class Pipe<I, O> implements I_Pipe<I, O>
 //implements I_Pipe<T> 
-{
-
-  public static final <PI, PO> I_Pipe<PI, PO> of(Consumer<PI> consumer) {
-    return new Pipe<PI, PO>(consumer);
-  }
-
-  public static final <PI, PO> I_Pipe<PI, PO> of(Consumer<PI> consumer, String name) {
-    return new Pipe<PI, PO>(consumer, Optional.of(Objects.requireNonNull(name)));
-  }
-  
-  public static final <PI> I_Run<PI> of(Class<PI> inClazz, Consumer<PI> consumer) {
-    return new Pipe<PI, Void>(consumer);
-  }
-
-  public static final <PI> I_Run<PI> of(Class<PI> inClazz, 
-  		Consumer<PI> consumer, String name) {
-    return new Pipe<PI, Void>(consumer, Optional.of(Objects.requireNonNull(name)));
-  }
-  
-  public static final <PI, PO> I_Pipe<PI, PO> of(Function<PI, PO> fun) {
-    return new Pipe<PI, PO>(fun);
-  }
-
-  public static final <PI, PO> I_Pipe<PI, PO> of(Function<PI, PO> fun, String name) {
-    return new Pipe<PI, PO>(fun, Optional.of(Objects.requireNonNull(name)));
-  }
-  
-  public static final <PI, PO> I_Pipe<PI, PO> of(Class<PI> inClazz, Class<PO> outClazz, Function<PI, PO> fun) {
-    return new Pipe<PI, PO>(fun);
-  }
-
-  public static final <PI, PO> I_Pipe<PI, PO> of(Class<PI> inClazz, Class<PO> outClazz, 
-  		Function<PI, PO> fun, String name) {
-    return new Pipe<PI, PO>(fun, Optional.of(Objects.requireNonNull(name)));
-  }
-  
+{  
   private final AtomicReferenceExt<AbstractSegment> ar = new AtomicReferenceExt<>();
 
   public Pipe(Consumer<I> consumer) {
@@ -168,8 +133,7 @@ public class Pipe<I, O> implements I_Pipe<I, O>
 
   @SuppressWarnings("unchecked")
   public Optional<O> get(I i) {
-  	Set<AbstractSegment> segsStarted = new HashSet<>();
-    return new PipeProcessor(ar.get()).process(segsStarted, i);
+    return new PipeProcessor(ar.get()).process(i);
   }
 
   public Optional<O> get(I... in) {
