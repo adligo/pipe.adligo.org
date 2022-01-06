@@ -3,7 +3,8 @@ package org.adligo.pipe;
 import java.util.Objects;
 
 public enum SegmentType {
-  head(HeadSegment.class),
+  distinct(DistinctSegment.class),
+	head(HeadSegment.class),
   headBi(HeadBiSegment.class),
   headConsumer(HeadConsumerSegment.class),
   link(LinkSegment.class),

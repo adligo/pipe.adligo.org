@@ -61,6 +61,8 @@ public class PipeProcessor<I,O> {
   		PipeProcessorCtx ctx, Object i) {
     SegmentType t = seg.getType();
     switch (t) {
+      case distinct:
+        return processDistinct((DistinctSegment) seg, ctx, i);
       case head:
           O o = ((HeadSegment<? super Object, O>) seg).apply(i);
           if (o != null) {
@@ -94,6 +96,7 @@ public class PipeProcessor<I,O> {
   @SuppressWarnings({ "rawtypes", "unchecked" })
   public <PI,M,PO> PipeOptional<PO> processLink(LinkSegment seg, 
   		PipeProcessorCtx ctx, Object i) {
+  	
     AbstractSegment head = seg.getHead();
     PipeOptional po = process(head, ctx, i);
     if (po.isEmpty()) {
@@ -114,26 +117,45 @@ public class PipeProcessor<I,O> {
   public <IL, IR, O> PipeOptional<O> processBiSeg(
   		TailBiSegment<IL, IR, O> seg, 
   		PipeProcessorCtx ctx, IR i) {
-    
-  	PipeOptional<IL> po = seg.getIdentityOpt();
-  	if (po.isPresent()) {
-  		O o = null;
-  		Object accumulator = ctx.getAccumulator(seg);
-  		if (accumulator == null) {
-  			o = seg.apply(po.get(), i);
-  		} else {
-  			o = seg.apply((IL) accumulator, i);	
-  		}
-  		if (o != null) {
-    		ctx.setAccumulator(seg, o);
-  			return PipeOptional.of(o);
-  		} 
-  	} else {
-  		 O o = seg.apply(null, i);
-   		if (o != null) {
-   			return PipeOptional.of(o);
-   		} 
-  	}
+  	
+		O o = null;
+		Object accumulator = ctx.getAccumulator(seg);
+		if (accumulator == null) {
+	  	PipeOptional<IL> po = seg.getIdentityOpt();
+	  	if (po.isPresent()) {
+			  accumulator = po.get();
+	  	}
+			o = seg.apply((IL) accumulator, i);
+		} else {
+			o = seg.apply((IL) accumulator, i);	
+		}
+		if (o != null) {
+  		ctx.setAccumulator(seg, o);
+			return PipeOptional.of(o);
+		} 
+    return PipeOptional.empty();
+  }
+  
+
+  @SuppressWarnings({"unchecked" })
+  public <S, I, O> PipeOptional<O> processDistinct(
+  		DistinctSegment<S, I, O> seg, 
+  		PipeProcessorCtx ctx, I i) {
+  	
+		O o = null;
+		Set accumulator = ctx.getAccumulator(seg);
+		if (accumulator == null) {
+			PipeOptional<Set> po = seg.getIdentityOpt();
+			accumulator = po.get();
+			o = seg.apply((S) accumulator, i);
+			ctx.setAccumulator(seg, accumulator);
+		} else {
+			o = seg.apply((S) accumulator, i);	
+		}
+		if (o != null) {
+			//almost the same as processBi but 
+			return PipeOptional.of(o);
+		}  
     return PipeOptional.empty();
   }
 }

@@ -76,7 +76,7 @@ tasks.register<GradleBuild>("ecp") {
 }
 
 application {
-    mainClass.set("org.adligo.pipe.ExampleReduce")
+    mainClass.set("org.adligo.pipe.ExampleAll")
 }
 
 

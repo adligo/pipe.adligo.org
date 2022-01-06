@@ -1,5 +1,6 @@
 package org.adligo.pipe;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -53,47 +54,38 @@ public class Pipe<I, O> implements I_Pipe<I, O>
   		Consumer<B> tail, Optional<String> tailNameOpt) {
     ar.set(new LinkSegment(head, headNameOpt, tail, tailNameOpt));
   }
-  
-  @Override
-  public I_Run<I> decision(Consumer<? super O> consumer) {
-  	return decision(consumer, Optional.empty());
-  }
-
-  public I_Run<I> decision(Consumer<? super O> consumer, String name) {
-    return decision(consumer, Optional.of(name));
-  }
-	
-  public I_Run<I> decision(Consumer<? super O> consumer, Optional<String> nameOpt) {
-    return then(consumer, nameOpt);
-  }
-
-	@Override
-	public <B, R> I_Pipe<I, R> decision(Function<? super O, ? extends R> fun) {
-		return decision(fun);
-	}
-	
-	@Override
-	public <B, R> I_Pipe<I, R> decision(Function<? super O, ? extends R> fun, String name) {
-		return map(fun, Optional.of(Objects.requireNonNull(name)));
-	}
 	
   public I_Pipe<I, O> distinct() {
-    return map(new Function<O, O>() {
-      Set<O> set = new HashSet<O>();
-
-      @Override
-      public O apply(O t) {
-        if (set.contains(t)) {
-          return null;
-        } else {
-          set.add(t);
-          return t;
-        }
-      }
-
-    });
+    return distinct(Optional.empty());
   }
 
+  public I_Pipe<I, O> distinct(String name) {
+  	return distinct(Optional.of(Objects.requireNonNull(name)));
+  }
+
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+	public I_Pipe<I, O> distinct(Optional<String> nameOpt) {
+    AbstractSegment seg = ar.get();
+    seg.checkMappable();
+    SegmentType t = seg.getType();
+    switch (t) {
+      case head:
+          ar.set(new LinkSegment(seg, new DistinctSegment(nameOpt)));
+        break;
+      case tail:
+      case link:
+          LinkSegment tfSeg = (LinkSegment) seg;
+          AbstractSegment oldHead = tfSeg.getHead();
+          AbstractSegment oldTail = tfSeg.getTail();
+          ar.set(new LinkSegment(oldHead, 
+          		new LinkSegment(oldTail, new DistinctSegment(nameOpt))));
+        break;
+      default:
+        throw new IllegalStateException("TODO " + t);
+    }
+    return (I_Pipe) this;
+  }
+  
 	@Override
 	public I_Pipe<I, O> filter(Predicate<? super O> predicate) {
 		return filter(predicate, Optional.empty());
@@ -104,6 +96,7 @@ public class Pipe<I, O> implements I_Pipe<I, O>
 		return filter(predicate, Optional.of(Objects.requireNonNull(name)));
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public I_Pipe<I, O> filter(Predicate<? super O> predicate, Optional<String> nameOpt) {
     AbstractSegment seg = ar.get();
 		seg.checkMappable();
@@ -130,8 +123,30 @@ public class Pipe<I, O> implements I_Pipe<I, O>
     return (I_Pipe) this;
 	}
 	
+  @Override
+  public I_Run<I> fork(Consumer<? super O> consumer) {
+  	return fork(consumer, Optional.empty());
+  }
 
-  @SuppressWarnings("unchecked")
+  public I_Run<I> fork(Consumer<? super O> consumer, String name) {
+    return fork(consumer, Optional.of(name));
+  }
+	
+  public I_Run<I> fork(Consumer<? super O> consumer, Optional<String> nameOpt) {
+    return then(consumer, nameOpt);
+  }
+
+	@Override
+	public <B, R> I_Pipe<I, R> fork(Function<? super O, ? extends R> fun) {
+		return fork(fun);
+	}
+	
+	@Override
+	public <B, R> I_Pipe<I, R> fork(Function<? super O, ? extends R> fun, String name) {
+		return map(fun, Optional.of(Objects.requireNonNull(name)));
+	}
+	
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public Optional<O> get(I i) {
     return new PipeProcessor(ar.get()).process(i);
   }
@@ -155,7 +170,6 @@ public class Pipe<I, O> implements I_Pipe<I, O>
     return map(mapper);
   }
 
-  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public I_Run<I> then(Consumer<? super O> consumer) {
      return then(consumer, Optional.empty());	
@@ -171,11 +185,6 @@ public class Pipe<I, O> implements I_Pipe<I, O>
           ar.set(new LinkSegment((HeadSegment) seg, consumer, nameOpt));
         break;
       case tail:
-          LinkSegment tSeg = (LinkSegment) seg;
-          AbstractSegment tOldHead = tSeg.getHead();
-          AbstractSegment tOldTail = tSeg.getTail();
-          ar.set(new LinkSegment(tOldHead, new LinkSegment(tOldTail, consumer, nameOpt)));
-        break;
       case link:
           LinkSegment tfSeg = (LinkSegment) seg;
           AbstractSegment oldHead = tfSeg.getHead();
@@ -207,11 +216,6 @@ public class Pipe<I, O> implements I_Pipe<I, O>
           ar.set(new LinkSegment(seg, mapper, nameOpt));
         break;
       case tail:
-          LinkSegment tSeg = (LinkSegment) seg;
-          AbstractSegment tOldHead = tSeg.getHead();
-          AbstractSegment tOldTail = tSeg.getTail();
-          ar.set(new LinkSegment(tOldHead, new LinkSegment(tOldTail, mapper, nameOpt)));
-        break;
       case link:
           LinkSegment tfSeg = (LinkSegment) seg;
           AbstractSegment oldHead = tfSeg.getHead();
@@ -247,12 +251,6 @@ public class Pipe<I, O> implements I_Pipe<I, O>
           ar.set(new LinkSegment(seg, identityOpt, bo, nameOpt));
         break;
       case tail:
-          LinkSegment tSeg = (LinkSegment) seg;
-          AbstractSegment tOldHead = tSeg.getHead();
-          AbstractSegment tOldTail = tSeg.getTail();
-          ar.set(new LinkSegment(tOldHead, 
-          		new LinkSegment(tOldTail, identityOpt, bo, nameOpt)));
-        break;
       case link:
           LinkSegment tfSeg = (LinkSegment) seg;
           AbstractSegment oldHead = tfSeg.getHead();
@@ -294,24 +292,49 @@ public class Pipe<I, O> implements I_Pipe<I, O>
 		throw new IllegalStateException("TODO ");
 	}
 
-  @Override
+	@Override
   public I_Pipe<I, List<O>> toList() {
-    throw new IllegalStateException("Method not yet implemented");
-    // reduce( ,new ArrayList<>, Collectors.toList());
+    return toList(Optional.empty());
   }
 
-  /*
-   * public I_Pipe<I,List<O>> toList(Supplier<List<O>> listSupplier) { return
-   * map(new Function<O,List<O>>() {
-   * 
-   * @Override public List<O> apply(O t) { listSupplier.get() list.add(t); return
-   * list; }
-   * 
-   * public List<O> apply(O t, List<O> list) { list.add(t); return list; } }); }
-   * 
-   * @Override public I_Pipe<I,Set<O>> toSet() { return map(new
-   * Function<O,Set<O>>() { Set<O> r = new HashSet<>();
-   * 
-   * @Override public Set<O> apply(O t) { r.add(t); return r; } }); }
-   */
+	@Override
+  public I_Pipe<I, List<O>> toList(String name) {
+    return toList(Optional.of(name));
+  }
+  
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  public I_Pipe<I, List<O>> toList(Optional<String> nameOpt) {
+  	PipeOptional<O> pol = (PipeOptional) PipeOptional.of(new ArrayList());
+  	BinaryOperator<O> bo = (l, r) -> { 
+			if (PipeOptional.empty() != r) {
+				((List) l).add(r); 
+			}
+			return l; 
+		};
+    reduce(pol, bo, nameOpt);
+    return (I_Pipe) this;
+  }
+  
+	@Override
+  public I_Pipe<I, Set<O>> toSet() {
+    return toSet(Optional.empty());
+  }
+
+	@Override
+  public I_Pipe<I, Set<O>> toSet(String name) {
+    return toSet(Optional.of(name));
+  }
+  
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  public I_Pipe<I, Set<O>> toSet(Optional<String> nameOpt) {
+  	PipeOptional<O> poo = (PipeOptional) PipeOptional.of(new HashSet());
+  	BinaryOperator<O> bo = (l, r) -> { 
+			if (PipeOptional.empty() != r) {
+				((Set) l).add(r); 
+			}
+			return l; 
+		};
+    reduce(poo, bo, nameOpt);
+    return (I_Pipe) this;
+  }
 }

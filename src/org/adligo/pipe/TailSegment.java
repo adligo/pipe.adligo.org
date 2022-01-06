@@ -16,14 +16,14 @@ implements Function<I, O> {
   @SuppressWarnings("unchecked")
 	@Override
   public O apply(I i) {
-  	if (PipeOptional.isA(i)) {
-  		PipeOptional<I> po = (PipeOptional<I>) i;
-  		if (po.isPresent()) {
+  	if (PipeOptional.empty() != i) {
+    	if (PipeOptional.isA(i)) {
+    		PipeOptional<I> po = (PipeOptional<I>) i;
   			I ii = po.get();
   			return tail.apply(ii);
-  		}
-  	} else {
-  	  return tail.apply(i);
+    	} else {
+    	  return tail.apply(i);
+    	}	
   	}
   	return (O) PipeOptional.empty();
   }

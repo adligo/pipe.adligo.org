@@ -58,4 +58,13 @@ public class PipeOptional<T> {
   public boolean isPresent() {
     return delegate.isPresent();
   }
+  
+  public boolean same(Object ... objects) {
+  	for (int i = 0; i < objects.length; i++) {
+			if (objects[i] == this) {
+				return true;
+			}
+		}
+  	return false;
+  }
 }

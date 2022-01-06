@@ -33,7 +33,7 @@ public class Example {
 //					  default: return false;
 //					}
 //				})
-        .decision(stepTwo(), "two");
+        .fork(stepTwo(), "two");
     p.supply(List.of("123", "456", "789"));
   }
 

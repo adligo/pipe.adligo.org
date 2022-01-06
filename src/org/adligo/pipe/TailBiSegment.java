@@ -25,18 +25,17 @@ implements BiFunction<IL, IR, O> {
     return SegmentType.tailBi;
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
   public O apply(IL l, IR r) {
-//  	if (l == null) {
-//  		if ( r != null) {
-//  			return (O) r;
-//  		}
-//  	}
-//  	if (r == null) {
-//  		return null;
-//  	}
-    return tail.apply(l,r);
+  	if (PipeOptional.empty().same(l, r)) {
+  		return (O) PipeOptional.empty();
+  	}
+		if (PipeOptional.isA(l)) {
+			return tail.apply((IL) ((PipeOptional) l).get(),r);
+		} else {
+			return tail.apply(l,r);
+		}
   }
   
   public PipeOptional<IL> getIdentityOpt() {
