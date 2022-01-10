@@ -1,6 +1,10 @@
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+/**
+  NOTE use the project git@github.com:adligo/2022.git to build this
+*/
+
 plugins {
   application
   `maven-publish`
@@ -8,27 +12,6 @@ plugins {
   java
   signing
 }
-
-dependencies {
-  implementation("org.adligo:i_pipe:v0_4")
-}
-
-java {
-  toolchain {
-    languageVersion.set(JavaLanguageVersion.of(11))
-  }
-}
-
-
-sourceSets {
-  main {
-    java {
-      srcDirs("src")
-    }
-  }
-}
-
-
 
 fun getProp(key: String, default: String): String {
   var r : String = default
@@ -60,23 +43,5 @@ publishing {
   }
 }
 
-
-repositories {
-  mavenLocal()
-  mavenCentral()
-}
-
-/**
-I have found that the JAVA_HOME environment variable that is set when your run this task ;
-    gradle cleanEclipse eclipse
-is the one that is included in the Eclipse BuildPath
-*/
-tasks.register<GradleBuild>("ecp") {
-    tasks = listOf("cleanEclipseClasspath", "eclipseClasspath")
-}
-
-application {
-    mainClass.set("org.adligo.pipe.ExampleAll")
-}
 
 
