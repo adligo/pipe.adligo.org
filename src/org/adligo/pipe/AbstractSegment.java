@@ -3,7 +3,7 @@ package org.adligo.pipe;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.adligo.i.pipe.I_Named;
+import org.adligo.i_pipe.I_Named;
 
 public abstract class AbstractSegment implements I_Named {
 

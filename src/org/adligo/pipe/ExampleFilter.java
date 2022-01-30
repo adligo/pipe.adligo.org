@@ -3,7 +3,7 @@ package org.adligo.pipe;
 import java.util.Optional;
 import java.util.function.Function;
 
-import org.adligo.i.pipe.I_Pipe;
+import org.adligo.i_pipe.I_Pipe;
 
 public class ExampleFilter implements Function<String, Integer> {
 

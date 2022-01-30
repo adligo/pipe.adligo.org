@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
-import org.adligo.i.pipe.I_Pipe;
+import org.adligo.i_pipe.I_Pipe;
 
 public class ExampleSet implements Function<Integer, String> {
 

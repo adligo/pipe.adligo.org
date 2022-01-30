@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-import org.adligo.i.pipe.I_Pipe;
+import org.adligo.i_pipe.I_Pipe;
 
 public class ExampleList implements Function<Integer, String> {
 

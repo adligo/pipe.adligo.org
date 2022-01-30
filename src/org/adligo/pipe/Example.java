@@ -7,7 +7,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import org.adligo.i.pipe.I_Run;
+import org.adligo.i_pipe.I_Run;
 
 public class Example {
 

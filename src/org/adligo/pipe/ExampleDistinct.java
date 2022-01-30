@@ -3,7 +3,7 @@ package org.adligo.pipe;
 import java.util.List;
 import java.util.function.Function;
 
-import org.adligo.i.pipe.I_Pipe;
+import org.adligo.i_pipe.I_Pipe;
 
 public class ExampleDistinct implements Function<Integer, Integer> {
 

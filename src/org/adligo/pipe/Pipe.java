@@ -13,8 +13,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import org.adligo.i.pipe.I_Pipe;
-import org.adligo.i.pipe.I_Run;
+import org.adligo.i_pipe.I_Pipe;
+import org.adligo.i_pipe.I_Run;
 
 public class Pipe<I, O> implements I_Pipe<I, O>
 //implements I_Pipe<T> 
