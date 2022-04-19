@@ -7,7 +7,7 @@ import java.util.function.Function;
 
 import org.adligo.i_pipe.I_Pipe;
 import org.adligo.i_pipe.I_PipeCtx;
-import org.adligo.i_pipe.I_Run;
+import org.adligo.i_pipe.I_Consumer;
 
 /**
  * A Context class that facilitates creation of I_Pipes,
@@ -18,37 +18,19 @@ import org.adligo.i_pipe.I_Run;
  */
 public class PipeCtx implements I_PipeCtx {
 
-  public <PI, PO> I_Pipe<PI, PO> newPipe(Consumer<PI> consumer) {
-    return new Pipe<PI, PO>(consumer);
+  public <I> I_Pipe<I, Void> newPipe(Consumer<I> consumer) {
+    return new Pipe<I, Void>(consumer);
   }
 
-  public <PI, PO> I_Pipe<PI, PO> newPipe(Consumer<PI> consumer, String name) {
-    return new Pipe<PI, PO>(consumer, Optional.of(Objects.requireNonNull(name)));
-  }
-  
-  public <PI> I_Run<PI> newPipe(Class<PI> inClazz, Consumer<PI> consumer) {
-    return new Pipe<PI, Void>(consumer);
+  public  <I> I_Pipe<I, Void> newPipe(Consumer<I> consumer, String name) {
+    return new Pipe<I, Void>(consumer, Optional.of(Objects.requireNonNull(name)));
   }
 
-  public <PI> I_Run<PI> newPipe(Class<PI> inClazz, 
-  		Consumer<PI> consumer, String name) {
-    return new Pipe<PI, Void>(consumer, Optional.of(Objects.requireNonNull(name)));
-  }
-  
-  public <PI, PO> I_Pipe<PI, PO> newPipe(Function<PI, PO> fun) {
-    return new Pipe<PI, PO>(fun);
+  public <I, O> I_Pipe<I, O> newPipe(Function<I,O> fun) {
+    return new Pipe<I, O>(fun);
   }
 
-  public <PI, PO> I_Pipe<PI, PO> newPipe(Function<PI, PO> fun, String name) {
-    return new Pipe<PI, PO>(fun, Optional.of(Objects.requireNonNull(name)));
-  }
-  
-  public <PI, PO> I_Pipe<PI, PO> newPipe(Class<PI> inClazz, Class<PO> outClazz, Function<PI, PO> fun) {
-    return new Pipe<PI, PO>(fun);
-  }
-
-  public <PI, PO> I_Pipe<PI, PO> newPipe(Class<PI> inClazz, Class<PO> outClazz, 
-  		Function<PI, PO> fun, String name) {
-    return new Pipe<PI, PO>(fun, Optional.of(Objects.requireNonNull(name)));
+  public <I, O> I_Pipe<I, O> newPipe(Function<I, O> fun, String name) {
+    return new Pipe<I, O>(fun, Optional.of(Objects.requireNonNull(name)));
   }
 }
