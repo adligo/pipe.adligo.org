@@ -382,4 +382,75 @@ public class Pipe<I, O> implements I_Pipe<I, O>
     throw new IllegalStateException("TODO");
   }
 
+  @Override
+  public I_Pipe<I, Collection<O>> collection(Supplier<Collection<O>> collectionSupplier) {
+    throw new IllegalStateException("TODO");
+  }
+
+  @Override
+  public I_Pipe<I, Collection<O>> collection(Supplier<Collection<O>> collectionSupplier, String name) {
+    throw new IllegalStateException("TODO");
+  }
+
+  @Override
+  public I_Pipe<I, List<O>> list() {
+    throw new IllegalStateException("TODO");
+  }
+
+  @Override
+  public I_Pipe<I, List<O>> list(String name) {
+    throw new IllegalStateException("TODO");
+  }
+
+  @Override
+  public I_Pipe<I, List<O>> list(Supplier<List<O>> listSupplier) {
+    throw new IllegalStateException("TODO");
+  }
+
+  @Override
+  public I_Pipe<I, List<O>> list(Supplier<List<O>> listSupplier, String name) {
+    throw new IllegalStateException("TODO");
+  }
+
+  @Override
+  public <K, V> I_Pipe<I, Map<K, V>> map(BiConsumer<O, Map<K, V>> collector) {
+    throw new IllegalStateException("TODO");
+  }
+
+  @Override
+  public <K, V> I_Pipe<I, Map<K, V>> map(String name, BiConsumer<O, Map<K, V>> collector) {
+    throw new IllegalStateException("TODO");
+  }
+
+  @Override
+  public <K, V> I_Pipe<I, Map<K, V>> map(Supplier<Map<K, V>> setSupplier, BiConsumer<O, Map<K, V>> collector) {
+    throw new IllegalStateException("TODO");
+  }
+
+  @Override
+  public <K, V> I_Pipe<I, Map<K, V>> map(Supplier<Map<K, V>> setSupplier, String name,
+      BiConsumer<O, Map<K, V>> collector) {
+    throw new IllegalStateException("TODO");
+  }
+
+  @Override
+  public I_Pipe<I, Set<O>> set() {
+    throw new IllegalStateException("TODO");
+  }
+
+  @Override
+  public I_Pipe<I, Set<O>> set(String name) {
+    throw new IllegalStateException("TODO");
+  }
+
+  @Override
+  public I_Pipe<I, Set<O>> set(Supplier<Set<O>> setSupplier) {
+    throw new IllegalStateException("TODO");
+  }
+
+  @Override
+  public I_Pipe<I, Set<O>> set(Supplier<Set<O>> setSupplier, String name) {
+    throw new IllegalStateException("TODO");
+  }
+
 }
