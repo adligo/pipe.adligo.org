@@ -23,6 +23,21 @@ import org.adligo.i_pipe.I_Distinguisher;
 public class Pipe<I, O> implements I_Pipe<I, O>
 //implements I_Pipe<T> 
 {
+  public static List<Integer> listOf(int ... i) {
+		List<Integer> r = new ArrayList<>();
+		for (int j = 0; j < i.length; j++) {
+			r.add(i[j]);
+		}  
+		return r;
+	  }
+  public static <I> List<I> listOf(I ... i) {
+		List<I> r = new ArrayList<>();
+		for (int j = 0; j < i.length; j++) {
+			r.add(i[j]);
+		}  
+		return r;
+	  }
+  
   private final AtomicReferenceExt<AbstractSegment> ar = new AtomicReferenceExt<>();
 
   public Pipe(Consumer<I> consumer) {
@@ -58,12 +73,14 @@ public class Pipe<I, O> implements I_Pipe<I, O>
     ar.set(new LinkSegment(head, headNameOpt, tail, tailNameOpt));
   }
   
-  public void accept(I in) {
-    supply(List.of(in));
+  @SuppressWarnings("unchecked")
+public void accept(I in) {
+    supply(listOf(in));
   }
 
-  public void accept(I... in) {
-    supply(List.of(in));
+  @SuppressWarnings("unchecked")
+public void accept(I... in) {
+    supply(listOf(in));
   }
 
   public void accept(Collection<I> in) {
@@ -164,8 +181,9 @@ public class Pipe<I, O> implements I_Pipe<I, O>
     return new PipeProcessor(ar.get()).process(i);
   }
 
-  public Optional<O> supply(I... in) {
-    return supply(List.of(in));
+  @SuppressWarnings("unchecked")
+public Optional<O> supply(I... in) {
+    return supply(listOf(in));
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })

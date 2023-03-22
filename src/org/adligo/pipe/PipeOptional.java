@@ -52,7 +52,7 @@ public class PipeOptional<T> {
   }
 
   public boolean isEmpty() {
-    return delegate.isEmpty();
+    return !delegate.isPresent();
   }
 
   public boolean isPresent() {
