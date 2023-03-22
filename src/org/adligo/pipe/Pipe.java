@@ -23,7 +23,7 @@ import org.adligo.i_pipe.I_Distinguisher;
 public class Pipe<I, O> implements I_Pipe<I, O>
 //implements I_Pipe<T> 
 {
-  public static List<Integer> listOf(int ... i) {
+  public static List<Integer> listOfInts(int ... i) {
 		List<Integer> r = new ArrayList<>();
 		for (int j = 0; j < i.length; j++) {
 			r.add(i[j]);

@@ -1,7 +1,5 @@
 package org.adligo.pipe;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Function;
 
 import org.adligo.i_pipe.I_Pipe;
@@ -20,7 +18,7 @@ public class ExampleDistinct implements Function<Integer, Integer> {
   			System.out.println("hey " + i + " wasn't filtered");
   			return i;
   		});
-		p.supply(Pipe.listOf(1, 1, 2, 3, 4, 5, 55, 6, 7, 8, 99));
+		p.supply(Pipe.listOfInts(1, 1, 2, 3, 4, 5, 55, 6, 7, 8, 99));
   }
 
 	@Override
